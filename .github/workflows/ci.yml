@@ -1,17 +1,15 @@
-name: CI with Gradle and SonarCloud
+name: CI - Gradle Docker ECR
 
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
@@ -20,26 +18,18 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Cache Gradle packages
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle
-
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v2
-      with:
-        projectBaseDir: .
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_PROJECT_KEY: evs-sonarorganization_Java-vth-Gradle-GA
-        SONAR_ORGANIZATION: evs-sonarorganization
-
     - name: Build with Gradle
       run: ./gradlew build
 
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
     - name: Build Docker Image
-      run: docker build -t hello-java-app .
+      run: |
+        docker build -t hello-java-app .
+        docker tag hello-java-app:latest ${{ steps.login-ecr.outputs.registry }}/hello-java-app:latest
+
+    - name: Push Docker Image to ECR
+      run: |
+        docker push ${{ steps.login-ecr.outputs.registry }}/hello-java-app:latest
