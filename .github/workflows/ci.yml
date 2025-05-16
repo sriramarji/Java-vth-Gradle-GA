@@ -33,7 +33,7 @@ jobs:
       run: gradle wrapper
 
     - name: Build and Analyze with Gradle SonarQube Plugin
-      run: ./gradlew build sonarqube -Dsonar.host.url=${{ env.SONAR_HOST_URL }} -Dsonar.login=${{ env.SONAR_TOKEN }}
+      run: ./gradlew build sonarqube -Dsonar.host.url=${{ env.SONAR_HOST_URL }} -Dsonar.login=${{ env.SONAR_TOKEN }} -Dsonar.organization=sriramarji
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Ensure token is available
 
