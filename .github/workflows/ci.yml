@@ -3,20 +3,25 @@ name: CI - Gradle Docker ECR
 on:
   push:
     branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ] # Optional: Trigger on pull requests as well
   workflow_dispatch:
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     env:
       AWS_REGION: us-east-1  # ✅ Change if using a different region
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Add SonarCloud token as a secret
+      SONAR_HOST_URL: https://sonarcloud.io
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Important for SonarCloud to analyze all history
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -29,6 +34,17 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build
+
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@v2.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to comment on PRs
+      with:
+        args: >-
+          -Dsonar.projectKey=sriramarji_Java-vth-Gradle-GA
+          -Dsonar.organization=sriramarji
+          -Dsonar.java.binaries=build/classes
+          # Add other SonarCloud properties here if needed
 
     - name: Log in to Amazon ECR
       id: login-ecr
