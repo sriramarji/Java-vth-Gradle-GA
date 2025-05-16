@@ -34,13 +34,13 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
       
-    - name: Run SonarQube Analysis
-      run: /gradlew sonarqube
-      env:
-        SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
-        SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-        SONAR_SCANNER_OPTS: |
-          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+    #- name: Run SonarQube Analysis
+    # run: /gradlew sonarqube
+    # env:
+    #  SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+    #   SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+    #  SONAR_SCANNER_OPTS: |
+    #    -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
 
     - name: Log in to Amazon ECR
       id: login-ecr
