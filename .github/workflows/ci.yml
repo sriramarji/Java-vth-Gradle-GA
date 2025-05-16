@@ -17,7 +17,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_PROJECT_KEY: evs-sonarorganization_hello-world-app
+      SONAR_PROJECT_KEY: evs-sonarorganization_Java-vth-Gradle-GA
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
