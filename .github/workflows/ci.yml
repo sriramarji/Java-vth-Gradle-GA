@@ -32,19 +32,10 @@ jobs:
     - name: Generate Gradle Wrapper (if not in repo)
       run: gradle wrapper
 
-    - name: Build with Gradle
-      run: ./gradlew build
-
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@v2.1
+    - name: Build and Analyze with Gradle SonarQube Plugin
+      run: ./gradlew build sonarqube -Dsonar.host.url=${{ env.SONAR_HOST_URL }} -Dsonar.login=${{ env.SONAR_TOKEN }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to comment on PRs
-      with:
-        args: >-
-          -Dsonar.projectKey=sriramarji_Java-vth-Gradle-GA
-          -Dsonar.organization=sriramarji
-          -Dsonar.java.binaries=build/classes
-          # Add other SonarCloud properties here if needed
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Ensure token is available
 
     - name: Log in to Amazon ECR
       id: login-ecr
